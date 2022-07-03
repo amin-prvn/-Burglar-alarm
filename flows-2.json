@@ -1,0 +1,555 @@
+[
+    {
+        "id": "0cfb8b3295f991b2",
+        "type": "tab",
+        "label": "Flow 2",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "386a19a10e3ed115",
+        "type": "mqtt in",
+        "z": "0cfb8b3295f991b2",
+        "name": "MQTT IN",
+        "topic": "alarm/amin/#",
+        "qos": "0",
+        "datatype": "auto",
+        "broker": "d7932a1f51c2cdb1",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 120,
+        "y": 420,
+        "wires": [
+            [
+                "5cc2af063fa6b6a0"
+            ]
+        ]
+    },
+    {
+        "id": "3ce5d3c431501ae4",
+        "type": "template",
+        "z": "0cfb8b3295f991b2",
+        "name": "",
+        "field": "topic",
+        "fieldType": "msg",
+        "format": "sql",
+        "syntax": "mustache",
+        "template": "INSERT INTO \"alarm\" (node, datetime)\nVALUES (\"{{topic}}\", datetime('now', 'localtime'));\n",
+        "output": "str",
+        "x": 480,
+        "y": 420,
+        "wires": [
+            [
+                "3bfe20746612f09b"
+            ]
+        ]
+    },
+    {
+        "id": "bcd2c9e70b2504bf",
+        "type": "inject",
+        "z": "0cfb8b3295f991b2",
+        "name": "Create table",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 130,
+        "y": 280,
+        "wires": [
+            [
+                "8687a5f1c42b58c6"
+            ]
+        ]
+    },
+    {
+        "id": "1faf9917f23cc230",
+        "type": "sqlite",
+        "z": "0cfb8b3295f991b2",
+        "mydb": "16f150348c3a16d2",
+        "sqlquery": "msg.topic",
+        "sql": "",
+        "name": "Sqlite",
+        "x": 550,
+        "y": 280,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "8687a5f1c42b58c6",
+        "type": "template",
+        "z": "0cfb8b3295f991b2",
+        "name": "Create Table Query",
+        "field": "topic",
+        "fieldType": "msg",
+        "format": "sql",
+        "syntax": "mustache",
+        "template": "CREATE TABLE \"alarm\" (\n    \"id\"    INTEGER,\n    \"node\"  text,\n    \"datetime\"    text,\n    PRIMARY KEY(\"id\" AUTOINCREMENT) \n);",
+        "output": "str",
+        "x": 350,
+        "y": 280,
+        "wires": [
+            [
+                "1faf9917f23cc230"
+            ]
+        ]
+    },
+    {
+        "id": "fdfe9f0cd4138206",
+        "type": "inject",
+        "z": "0cfb8b3295f991b2",
+        "name": "Read all alarms",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 140,
+        "y": 340,
+        "wires": [
+            [
+                "b43f2f2ecc78676e"
+            ]
+        ]
+    },
+    {
+        "id": "b701c0cbcbd72b4e",
+        "type": "sqlite",
+        "z": "0cfb8b3295f991b2",
+        "mydb": "16f150348c3a16d2",
+        "sqlquery": "msg.topic",
+        "sql": "",
+        "name": "Sqlite",
+        "x": 550,
+        "y": 340,
+        "wires": [
+            [
+                "f1a35258f527f7f0"
+            ]
+        ]
+    },
+    {
+        "id": "b43f2f2ecc78676e",
+        "type": "template",
+        "z": "0cfb8b3295f991b2",
+        "name": "Select all alarms",
+        "field": "topic",
+        "fieldType": "msg",
+        "format": "sql",
+        "syntax": "mustache",
+        "template": "SELECT * FROM \"alarm\" ;",
+        "output": "str",
+        "x": 340,
+        "y": 340,
+        "wires": [
+            [
+                "b701c0cbcbd72b4e"
+            ]
+        ]
+    },
+    {
+        "id": "53507f8ab7bdba7a",
+        "type": "comment",
+        "z": "0cfb8b3295f991b2",
+        "name": "mqtt intial",
+        "info": "",
+        "x": 120,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "79417e1077c84907",
+        "type": "comment",
+        "z": "0cfb8b3295f991b2",
+        "name": "sqlite tools",
+        "info": "",
+        "x": 120,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "3bfe20746612f09b",
+        "type": "sqlite",
+        "z": "0cfb8b3295f991b2",
+        "mydb": "16f150348c3a16d2",
+        "sqlquery": "msg.topic",
+        "sql": "",
+        "name": "Sqlite",
+        "x": 670,
+        "y": 420,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "5cc2af063fa6b6a0",
+        "type": "function",
+        "z": "0cfb8b3295f991b2",
+        "name": "",
+        "func": "msg.topic = msg.topic.replace( /^\\D+/g, '')\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 300,
+        "y": 420,
+        "wires": [
+            [
+                "3ce5d3c431501ae4",
+                "e3f09fc339542dea",
+                "65905147d0935404",
+                "ff06f895f921128b"
+            ]
+        ]
+    },
+    {
+        "id": "c8890d9d1d759e91",
+        "type": "inject",
+        "z": "0cfb8b3295f991b2",
+        "name": "Topic alarm",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            },
+            {
+                "p": "qos",
+                "v": "2",
+                "vt": "num"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "alarm/amin/3",
+        "payload": "test message1",
+        "payloadType": "str",
+        "x": 150,
+        "y": 160,
+        "wires": [
+            [
+                "1cc6e1430b168478"
+            ]
+        ]
+    },
+    {
+        "id": "1cc6e1430b168478",
+        "type": "mqtt out",
+        "z": "0cfb8b3295f991b2",
+        "name": "MQTT OUT",
+        "topic": "",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "d7932a1f51c2cdb1",
+        "x": 370,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "169207e61f24abeb",
+        "type": "inject",
+        "z": "0cfb8b3295f991b2",
+        "name": "Topic alarm",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            },
+            {
+                "p": "qos",
+                "v": "2",
+                "vt": "num"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "alarm/amin/2",
+        "payload": "test message2",
+        "payloadType": "str",
+        "x": 150,
+        "y": 120,
+        "wires": [
+            [
+                "1cc6e1430b168478"
+            ]
+        ]
+    },
+    {
+        "id": "d5e82049a3cb7fa6",
+        "type": "ui_table",
+        "z": "0cfb8b3295f991b2",
+        "group": "e2d01b25dbd4cab0",
+        "name": "",
+        "order": 0,
+        "width": "15",
+        "height": "5",
+        "columns": [
+            {
+                "field": "id",
+                "title": "ID",
+                "width": "",
+                "align": "left",
+                "formatter": "rownum",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "node",
+                "title": "Node",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "datetime",
+                "title": "DateTime",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            }
+        ],
+        "outputs": 0,
+        "cts": false,
+        "x": 770,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "42fc9fda3fbe094b",
+        "type": "sqlite",
+        "z": "0cfb8b3295f991b2",
+        "mydb": "16f150348c3a16d2",
+        "sqlquery": "msg.topic",
+        "sql": "",
+        "name": "Sqlite",
+        "x": 470,
+        "y": 720,
+        "wires": [
+            [
+                "449fc65c9400c5fc"
+            ]
+        ]
+    },
+    {
+        "id": "277b20149ae17b4a",
+        "type": "template",
+        "z": "0cfb8b3295f991b2",
+        "name": "Select all alarms",
+        "field": "topic",
+        "fieldType": "msg",
+        "format": "sql",
+        "syntax": "mustache",
+        "template": "SELECT * FROM \"alarm\" \nORDER BY id ASC;",
+        "output": "str",
+        "x": 280,
+        "y": 720,
+        "wires": [
+            [
+                "42fc9fda3fbe094b"
+            ]
+        ]
+    },
+    {
+        "id": "449fc65c9400c5fc",
+        "type": "json",
+        "z": "0cfb8b3295f991b2",
+        "name": "",
+        "property": "payload",
+        "action": "obj",
+        "pretty": true,
+        "x": 610,
+        "y": 720,
+        "wires": [
+            [
+                "d5e82049a3cb7fa6"
+            ]
+        ]
+    },
+    {
+        "id": "d2474a4bc9c353f3",
+        "type": "inject",
+        "z": "0cfb8b3295f991b2",
+        "name": "",
+        "props": [],
+        "repeat": "20",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 110,
+        "y": 720,
+        "wires": [
+            [
+                "277b20149ae17b4a"
+            ]
+        ]
+    },
+    {
+        "id": "f1a35258f527f7f0",
+        "type": "debug",
+        "z": "0cfb8b3295f991b2",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 710,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "e3f09fc339542dea",
+        "type": "ui_toast",
+        "z": "0cfb8b3295f991b2",
+        "position": "top right",
+        "displayTime": "10",
+        "highlight": "",
+        "sendall": true,
+        "outputs": 0,
+        "ok": "OK",
+        "cancel": "",
+        "raw": false,
+        "className": "",
+        "topic": "",
+        "name": "",
+        "x": 510,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "65905147d0935404",
+        "type": "debug",
+        "z": "0cfb8b3295f991b2",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "topic",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 480,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "8482d2ccfb91b8b2",
+        "type": "e-mail",
+        "z": "0cfb8b3295f991b2",
+        "server": "smtp.gmail.com",
+        "port": "465",
+        "secure": true,
+        "tls": true,
+        "name": "amin_prvn@outlook.com",
+        "dname": "",
+        "credentials": {},
+        "x": 710,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "ff06f895f921128b",
+        "type": "function",
+        "z": "0cfb8b3295f991b2",
+        "name": "",
+        "func": "msg.payload = `You have alarm in sensor --${msg.topic}-- !`\nmsg.topic = \"Sensor ALARM\"\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 600,
+        "wires": [
+            [
+                "8482d2ccfb91b8b2"
+            ]
+        ]
+    },
+    {
+        "id": "d7932a1f51c2cdb1",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "37.32.28.73",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "sessionExpiry": ""
+    },
+    {
+        "id": "16f150348c3a16d2",
+        "type": "sqlitedb",
+        "db": "/tmp/iot-project",
+        "mode": "RWC"
+    },
+    {
+        "id": "e2d01b25dbd4cab0",
+        "type": "ui_group",
+        "name": "All Alarms",
+        "tab": "bcbf6bb9230506b5",
+        "order": 1,
+        "disp": true,
+        "width": "15",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "bcbf6bb9230506b5",
+        "type": "ui_tab",
+        "name": "Home",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    }
+]
